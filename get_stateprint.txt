@@ -1,0 +1,245 @@
+python get_state.py
+=== 可用工具 ===
+  - meta: None
+  - nextCursor: None
+  - tools: [Tool(name='get_game_state', title=None, description='Get the current Slay the Spire 2 game state.\n\nReturns the full game state including player sta
+ts, hand, enemies, potions, etc.\nThe state_type field indicates the current screen (combat, map, event, shop,\nfake_merchant, etc.).\n\nArgs:\n    format: "mark
+down" for human-readable output, "json" for structured data.\n', inputSchema={'properties': {'format': {'default': 'markdown', 'title': 'Format', 'type': 'string
+'}}, 'title': 'get_game_stateArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result']
+, 'title': 'get_game_stateOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='use_potion', title=None, description='
+Use a potion from the player\'s potion slots.\n\nWorks both during and outside of combat. Combat-only potions require an active battle.\n\nArgs:\n    slot: Potio
+n slot index (as shown in game state).\n    target: Entity ID of the target enemy (e.g. "JAW_WORM_0"). Required for enemy-targeted potions.\n', inputSchema={'pro
+perties': {'slot': {'title': 'Slot', 'type': 'integer'}, 'target': {'anyOf': [{'type': 'string'}, {'type': 'null'}], 'default': None, 'title': 'Target'}}, 'requi
+red': ['slot'], 'title': 'use_potionArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['r
+esult'], 'title': 'use_potionOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='discard_potion', title=None, descri
+ption="Discard a potion from the player's potion slots to free up space.\n\nUse this when all potion slots are full and you need room for incoming potions\n(e.g.
+ before collecting a potion reward).\n\nArgs:\n    slot: Potion slot index to discard (as shown in game state).\n", inputSchema={'properties': {'slot': {'title':
+ 'Slot', 'type': 'integer'}}, 'required': ['slot'], 'title': 'discard_potionArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Resu
+lt', 'type': 'string'}}, 'required': ['result'], 'title': 'discard_potionOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), To
+ol(name='proceed_to_map', title=None, description="Proceed from the current screen to the map.\n\nWorks from: rewards screen, rest site, shop, fake merchant.\nDo
+es NOT work for events — use event_choose_option() with the Proceed option's index.\n", inputSchema={'properties': {}, 'title': 'proceed_to_mapArguments', 'type'
+: 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'proceed_to_mapOutput', 'type': 'obj
+ect'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='combat_play_card', title=None, description='[Combat] Play a card from the player\'s h
+and.\n\nArgs:\n    card_index: Index of the card in hand (0-based, as shown in game state).\n    target: Entity ID of the target enemy (e.g. "JAW_WORM_0"). Requi
+red for single-target cards.\n\nNote that the index can change as cards are played - playing a card will shift the indices of remaining cards in hand.\nRefer to
+the latest game state for accurate indices. New cards are drawn to the right, so playing cards from right to left can help maintain more stable indices for remai
+ning cards.\n', inputSchema={'properties': {'card_index': {'title': 'Card Index', 'type': 'integer'}, 'target': {'anyOf': [{'type': 'string'}, {'type': 'null'}],
+ 'default': None, 'title': 'Target'}}, 'required': ['card_index'], 'title': 'combat_play_cardArguments', 'type': 'object'}, outputSchema={'properties': {'result'
+: {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'combat_play_cardOutput', 'type': 'object'}, icons=None, annotations=None, meta=None,
+execution=None), Tool(name='combat_end_turn', title=None, description="[Combat] End the player's current turn.", inputSchema={'properties': {}, 'title': 'combat_
+end_turnArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'combat_en
+d_turnOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='combat_select_card', title=None, description='[Combat Sele
+ction] Select a card from hand during an in-combat card selection prompt.\n\nUsed when a card effect asks you to select a card to exhaust, discard, etc.\nThis is
+ different from deck_select_card which handles out-of-combat card selection overlays.\n\nArgs:\n    card_index: 0-based index of the card in the selectable hand
+cards (as shown in game state).\n', inputSchema={'properties': {'card_index': {'title': 'Card Index', 'type': 'integer'}}, 'required': ['card_index'], 'title': '
+combat_select_cardArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title':
+'combat_select_cardOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='combat_confirm_selection', title=None, descri
+ption='[Combat Selection] Confirm the in-combat card selection.\n\nAfter selecting the required number of cards from hand (exhaust, discard, etc.),\nuse this to
+confirm the selection. Only works when the confirm button is enabled.\n', inputSchema={'properties': {}, 'title': 'combat_confirm_selectionArguments', 'type': 'o
+bject'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'combat_confirm_selectionOutput', 'type'
+: 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='rewards_claim', title=None, description='[Rewards] Claim a reward from the post
+-combat rewards screen.\n\nGold, potion, and relic rewards are claimed immediately.\nCard rewards open the card selection screen (state changes to card_reward).\
+n\nArgs:\n    reward_index: 0-based index of the reward on the rewards screen.\n\nNote that claiming a reward may change the indices of remaining rewards, so ref
+er to the latest game state for accurate indices.\nClaiming from right to left can help maintain more stable indices for remaining rewards, as rewards will alway
+s shift left to fill in gaps.\n', inputSchema={'properties': {'reward_index': {'title': 'Reward Index', 'type': 'integer'}}, 'required': ['reward_index'], 'title
+': 'rewards_claimArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': '
+rewards_claimOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='rewards_pick_card', title=None, description='[Rewar
+ds] Select a card from the card reward selection screen.\n\nArgs:\n    card_index: 0-based index of the card to add to the deck.\n', inputSchema={'properties': {
+'card_index': {'title': 'Card Index', 'type': 'integer'}}, 'required': ['card_index'], 'title': 'rewards_pick_cardArguments', 'type': 'object'}, outputSchema={'p
+roperties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'rewards_pick_cardOutput', 'type': 'object'}, icons=None, annotat
+ions=None, meta=None, execution=None), Tool(name='rewards_skip_card', title=None, description='[Rewards] Skip the card reward without selecting a card.', inputSc
+hema={'properties': {}, 'title': 'rewards_skip_cardArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}},
+'required': ['result'], 'title': 'rewards_skip_cardOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='map_choose_no
+de', title=None, description='[Map] Choose a map node to travel to.\n\nArgs:\n    node_index: 0-based index of the node from the next_options list.\n', inputSche
+ma={'properties': {'node_index': {'title': 'Node Index', 'type': 'integer'}}, 'required': ['node_index'], 'title': 'map_choose_nodeArguments', 'type': 'object'},
+ outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'map_choose_nodeOutput', 'type': 'object'}, icon
+s=None, annotations=None, meta=None, execution=None), Tool(name='rest_choose_option', title=None, description='[Rest Site] Choose a rest site option (rest, smith
+, etc.).\n\nArgs:\n    option_index: 0-based index of the option from the rest site state.\n', inputSchema={'properties': {'option_index': {'title': 'Option Inde
+x', 'type': 'integer'}}, 'required': ['option_index'], 'title': 'rest_choose_optionArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title'
+: 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'rest_choose_optionOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, executio
+n=None), Tool(name='shop_purchase', title=None, description='[Shop / Fake Merchant] Purchase an item from the shop.\n\nWorks for both regular shops (state_type:
+shop) and the fake merchant\nevent (state_type: fake_merchant). The fake merchant only sells relics.\n\nArgs:\n    item_index: 0-based index of the item from the
+ shop state.\n', inputSchema={'properties': {'item_index': {'title': 'Item Index', 'type': 'integer'}}, 'required': ['item_index'], 'title': 'shop_purchaseArgume
+nts', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'shop_purchaseOutput', '
+type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='event_choose_option', title=None, description='[Event] Choose an event opt
+ion.\n\nWorks for both regular events and ancients (after dialogue ends).\nAlso used to click the Proceed option after an event resolves.\n\nArgs:\n    option_in
+dex: 0-based index of the option from the event state.\n', inputSchema={'properties': {'option_index': {'title': 'Option Index', 'type': 'integer'}}, 'required':
+ ['option_index'], 'title': 'event_choose_optionArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 're
+quired': ['result'], 'title': 'event_choose_optionOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='event_advance_
+dialogue', title=None, description='[Event] Advance ancient event dialogue.\n\nClick through dialogue text in ancient events. Call repeatedly until options appea
+r.\n', inputSchema={'properties': {}, 'title': 'event_advance_dialogueArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', '
+type': 'string'}}, 'required': ['result'], 'title': 'event_advance_dialogueOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None),
+Tool(name='deck_select_card', title=None, description='[Card Selection] Select or deselect a card in the card selection screen.\n\nUsed when the game asks you to
+ choose cards from your deck (transform, upgrade,\nremove, discard) or pick a card from offered choices (potions, effects).\n\nFor deck selections: toggles card
+selection. For choose-a-card: picks immediately.\n\nArgs:\n    card_index: 0-based index of the card (as shown in game state).\n', inputSchema={'properties': {'c
+ard_index': {'title': 'Card Index', 'type': 'integer'}}, 'required': ['card_index'], 'title': 'deck_select_cardArguments', 'type': 'object'}, outputSchema={'prop
+erties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'deck_select_cardOutput', 'type': 'object'}, icons=None, annotations
+=None, meta=None, execution=None), Tool(name='deck_confirm_selection', title=None, description='[Card Selection] Confirm the current card selection.\n\nAfter sel
+ecting the required number of cards, use this to confirm.\nIf a preview is showing (e.g., transform preview), this confirms the preview.\nNot needed for choose-a
+-card screens where picking is immediate.\n', inputSchema={'properties': {}, 'title': 'deck_confirm_selectionArguments', 'type': 'object'}, outputSchema={'proper
+ties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'deck_confirm_selectionOutput', 'type': 'object'}, icons=None, annotat
+ions=None, meta=None, execution=None), Tool(name='deck_cancel_selection', title=None, description='[Card Selection] Cancel the current card selection.\n\nIf a pr
+eview is showing, goes back to the selection grid.\nFor choose-a-card screens, clicks the skip button (if available).\nOtherwise, closes the card selection scree
+n (only if cancellation is allowed).\n', inputSchema={'properties': {}, 'title': 'deck_cancel_selectionArguments', 'type': 'object'}, outputSchema={'properties':
+ {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'deck_cancel_selectionOutput', 'type': 'object'}, icons=None, annotations=No
+ne, meta=None, execution=None), Tool(name='bundle_select', title=None, description='[Bundle Selection] Open a bundle preview.\n\nArgs:\n    bundle_index: 0-based
+ index of the bundle.\n', inputSchema={'properties': {'bundle_index': {'title': 'Bundle Index', 'type': 'integer'}}, 'required': ['bundle_index'], 'title': 'bund
+le_selectArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'bundle_s
+electOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='bundle_confirm_selection', title=None, description='[Bundle
+ Selection] Confirm the currently previewed bundle.', inputSchema={'properties': {}, 'title': 'bundle_confirm_selectionArguments', 'type': 'object'}, outputSchem
+a={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'bundle_confirm_selectionOutput', 'type': 'object'}, icons=N
+one, annotations=None, meta=None, execution=None), Tool(name='bundle_cancel_selection', title=None, description='[Bundle Selection] Cancel the current bundle pre
+view.', inputSchema={'properties': {}, 'title': 'bundle_cancel_selectionArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result',
+ 'type': 'string'}}, 'required': ['result'], 'title': 'bundle_cancel_selectionOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None
+), Tool(name='relic_select', title=None, description='[Relic Selection] Select a relic from the relic selection screen.\n\nUsed when the game offers a choice of
+relics (e.g., boss relic rewards).\n\nArgs:\n    relic_index: 0-based index of the relic (as shown in game state).\n', inputSchema={'properties': {'relic_index':
+ {'title': 'Relic Index', 'type': 'integer'}}, 'required': ['relic_index'], 'title': 'relic_selectArguments', 'type': 'object'}, outputSchema={'properties': {'re
+sult': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'relic_selectOutput', 'type': 'object'}, icons=None, annotations=None, meta=None,
+ execution=None), Tool(name='relic_skip', title=None, description='[Relic Selection] Skip the relic selection without choosing a relic.', inputSchema={'propertie
+s': {}, 'title': 'relic_skipArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'],
+ 'title': 'relic_skipOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='treasure_claim_relic', title=None, descript
+ion='[Treasure] Claim a relic from the treasure chest.\n\nThe chest is auto-opened when entering the treasure room.\nAfter claiming, use proceed_to_map() to cont
+inue.\n\nArgs:\n    relic_index: 0-based index of the relic (as shown in game state).\n', inputSchema={'properties': {'relic_index': {'title': 'Relic Index', 'ty
+pe': 'integer'}}, 'required': ['relic_index'], 'title': 'treasure_claim_relicArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Res
+ult', 'type': 'string'}}, 'required': ['result'], 'title': 'treasure_claim_relicOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=No
+ne), Tool(name='crystal_sphere_set_tool', title=None, description='[Crystal Sphere] Switch the active divination tool.\n\nArgs:\n    tool: Either "big" or "small
+".\n', inputSchema={'properties': {'tool': {'title': 'Tool', 'type': 'string'}}, 'required': ['tool'], 'title': 'crystal_sphere_set_toolArguments', 'type': 'obje
+ct'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'crystal_sphere_set_toolOutput', 'type': 'o
+bject'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='crystal_sphere_click_cell', title=None, description='[Crystal Sphere] Click a hidde
+n cell on the Crystal Sphere grid.\n\nArgs:\n    x: Cell x-coordinate.\n    y: Cell y-coordinate.\n', inputSchema={'properties': {'x': {'title': 'X', 'type': 'in
+teger'}, 'y': {'title': 'Y', 'type': 'integer'}}, 'required': ['x', 'y'], 'title': 'crystal_sphere_click_cellArguments', 'type': 'object'}, outputSchema={'proper
+ties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'crystal_sphere_click_cellOutput', 'type': 'object'}, icons=None, anno
+tations=None, meta=None, execution=None), Tool(name='crystal_sphere_proceed', title=None, description='[Crystal Sphere] Continue after the Crystal Sphere minigam
+e finishes.', inputSchema={'properties': {}, 'title': 'crystal_sphere_proceedArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Res
+ult', 'type': 'string'}}, 'required': ['result'], 'title': 'crystal_sphere_proceedOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=
+None), Tool(name='mp_get_game_state', title=None, description='[Multiplayer] Get the current multiplayer game state.\n\nReturns a summary of all players (HP, gol
+d, alive status) plus full\ndetail for the local player (relics, potions, deck, etc.), along with\nmultiplayer-specific data: map votes, event votes, treasure bi
+ds,\nend-turn ready status. Only works during a multiplayer run.\n\nArgs:\n    format: "markdown" for human-readable output, "json" for structured data.\n', inpu
+tSchema={'properties': {'format': {'default': 'markdown', 'title': 'Format', 'type': 'string'}}, 'title': 'mp_get_game_stateArguments', 'type': 'object'}, output
+Schema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_get_game_stateOutput', 'type': 'object'}, icons=Non
+e, annotations=None, meta=None, execution=None), Tool(name='mp_combat_play_card', title=None, description='[Multiplayer Combat] Play a card from the local player
+\'s hand.\n\nSame as singleplayer combat_play_card but routed through the multiplayer\nendpoint for sync safety.\n\nArgs:\n    card_index: Index of the card in h
+and (0-based).\n    target: Entity ID of the target enemy (e.g. "JAW_WORM_0"). Required for single-target cards.\n', inputSchema={'properties': {'card_index': {'
+title': 'Card Index', 'type': 'integer'}, 'target': {'anyOf': [{'type': 'string'}, {'type': 'null'}], 'default': None, 'title': 'Target'}}, 'required': ['card_in
+dex'], 'title': 'mp_combat_play_cardArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['r
+esult'], 'title': 'mp_combat_play_cardOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_combat_end_turn', title
+=None, description='[Multiplayer Combat] Submit end-turn vote.\n\nIn multiplayer, ending the turn is a VOTE — the turn only ends when ALL\nplayers have submitted
+. Use mp_combat_undo_end_turn() to retract.\n', inputSchema={'properties': {}, 'title': 'mp_combat_end_turnArguments', 'type': 'object'}, outputSchema={'properti
+es': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_combat_end_turnOutput', 'type': 'object'}, icons=None, annotations=N
+one, meta=None, execution=None), Tool(name='mp_combat_undo_end_turn', title=None, description="[Multiplayer Combat] Retract end-turn vote.\n\nIf you submitted en
+d turn but want to play more cards, use this to undo.\nOnly works if other players haven't all committed yet.\n", inputSchema={'properties': {}, 'title': 'mp_com
+bat_undo_end_turnArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': '
+mp_combat_undo_end_turnOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_use_potion', title=None, description="
+[Multiplayer] Use a potion from the local player's potion slots.\n\nArgs:\n    slot: Potion slot index (as shown in game state).\n    target: Entity ID of the ta
+rget enemy. Required for enemy-targeted potions.\n", inputSchema={'properties': {'slot': {'title': 'Slot', 'type': 'integer'}, 'target': {'anyOf': [{'type': 'str
+ing'}, {'type': 'null'}], 'default': None, 'title': 'Target'}}, 'required': ['slot'], 'title': 'mp_use_potionArguments', 'type': 'object'}, outputSchema={'proper
+ties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_use_potionOutput', 'type': 'object'}, icons=None, annotations=None
+, meta=None, execution=None), Tool(name='mp_discard_potion', title=None, description="[Multiplayer] Discard a potion from the local player's potion slots to free
+ up space.\n\nArgs:\n    slot: Potion slot index to discard (as shown in game state).\n", inputSchema={'properties': {'slot': {'title': 'Slot', 'type': 'integer'
+}}, 'required': ['slot'], 'title': 'mp_discard_potionArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}
+, 'required': ['result'], 'title': 'mp_discard_potionOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_map_vote
+', title=None, description='[Multiplayer Map] Vote for a map node to travel to.\n\nIn multiplayer, map selection is a vote — travel happens when all players\nagr
+ee. Re-voting for the same node sends a ping to other players.\n\nArgs:\n    node_index: 0-based index of the node from the next_options list.\n', inputSchema={'
+properties': {'node_index': {'title': 'Node Index', 'type': 'integer'}}, 'required': ['node_index'], 'title': 'mp_map_voteArguments', 'type': 'object'}, outputSc
+hema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_map_voteOutput', 'type': 'object'}, icons=None, annot
+ations=None, meta=None, execution=None), Tool(name='mp_event_choose_option', title=None, description='[Multiplayer Event] Choose or vote for an event option.\n\n
+For shared events: this is a vote (resolves when all players vote).\nFor individual events: immediate choice, same as singleplayer.\n\nArgs:\n    option_index: 0
+-based index of the option from the event state.\n', inputSchema={'properties': {'option_index': {'title': 'Option Index', 'type': 'integer'}}, 'required': ['opt
+ion_index'], 'title': 'mp_event_choose_optionArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'requi
+red': ['result'], 'title': 'mp_event_choose_optionOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_event_advan
+ce_dialogue', title=None, description='[Multiplayer Event] Advance ancient event dialogue.', inputSchema={'properties': {}, 'title': 'mp_event_advance_dialogueAr
+guments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_event_advance_di
+alogueOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_rest_choose_option', title=None, description='[Multipla
+yer Rest Site] Choose a rest site option (rest, smith, etc.).\n\nPer-player choice — no voting needed.\n\nArgs:\n    option_index: 0-based index of the option.\n
+', inputSchema={'properties': {'option_index': {'title': 'Option Index', 'type': 'integer'}}, 'required': ['option_index'], 'title': 'mp_rest_choose_optionArgume
+nts', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_rest_choose_optionOu
+tput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_shop_purchase', title=None, description='[Multiplayer Shop] Pur
+chase an item from the shop.\n\nPer-player inventory — no voting needed.\n\nArgs:\n    item_index: 0-based index of the item.\n', inputSchema={'properties': {'it
+em_index': {'title': 'Item Index', 'type': 'integer'}}, 'required': ['item_index'], 'title': 'mp_shop_purchaseArguments', 'type': 'object'}, outputSchema={'prope
+rties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_shop_purchaseOutput', 'type': 'object'}, icons=None, annotations=
+None, meta=None, execution=None), Tool(name='mp_rewards_claim', title=None, description='[Multiplayer Rewards] Claim a reward from the post-combat rewards screen
+.\n\nArgs:\n    reward_index: 0-based index of the reward.\n', inputSchema={'properties': {'reward_index': {'title': 'Reward Index', 'type': 'integer'}}, 'requir
+ed': ['reward_index'], 'title': 'mp_rewards_claimArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'r
+equired': ['result'], 'title': 'mp_rewards_claimOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_rewards_pick_
+card', title=None, description='[Multiplayer Rewards] Select a card from the card reward screen.\n\nArgs:\n    card_index: 0-based index of the card to add to th
+e deck.\n', inputSchema={'properties': {'card_index': {'title': 'Card Index', 'type': 'integer'}}, 'required': ['card_index'], 'title': 'mp_rewards_pick_cardArgu
+ments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_rewards_pick_cardO
+utput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_rewards_skip_card', title=None, description='[Multiplayer Rewa
+rds] Skip the card reward.', inputSchema={'properties': {}, 'title': 'mp_rewards_skip_cardArguments', 'type': 'object'}, outputSchema={'properties': {'result': {
+'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_rewards_skip_cardOutput', 'type': 'object'}, icons=None, annotations=None, meta=None,
+ execution=None), Tool(name='mp_proceed_to_map', title=None, description='[Multiplayer] Proceed from the current screen to the map.\n\nWorks from: rewards screen
+, rest site, shop.\n', inputSchema={'properties': {}, 'title': 'mp_proceed_to_mapArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title':
+'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_proceed_to_mapOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=N
+one), Tool(name='mp_deck_select_card', title=None, description='[Multiplayer Card Selection] Select or deselect a card in the card selection screen.\n\nArgs:\n
+  card_index: 0-based index of the card.\n', inputSchema={'properties': {'card_index': {'title': 'Card Index', 'type': 'integer'}}, 'required': ['card_index'], '
+title': 'mp_deck_select_cardArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'],
+ 'title': 'mp_deck_select_cardOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_deck_confirm_selection', title=
+None, description='[Multiplayer Card Selection] Confirm the current card selection.', inputSchema={'properties': {}, 'title': 'mp_deck_confirm_selectionArguments
+', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_deck_confirm_selectionO
+utput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_deck_cancel_selection', title=None, description='[Multiplayer
+Card Selection] Cancel the current card selection.', inputSchema={'properties': {}, 'title': 'mp_deck_cancel_selectionArguments', 'type': 'object'}, outputSchema
+={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_deck_cancel_selectionOutput', 'type': 'object'}, icons=No
+ne, annotations=None, meta=None, execution=None), Tool(name='mp_bundle_select', title=None, description='[Multiplayer Bundle Selection] Open a bundle preview.\n\
+nArgs:\n    bundle_index: 0-based index of the bundle.\n', inputSchema={'properties': {'bundle_index': {'title': 'Bundle Index', 'type': 'integer'}}, 'required':
+ ['bundle_index'], 'title': 'mp_bundle_selectArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'requi
+red': ['result'], 'title': 'mp_bundle_selectOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_bundle_confirm_se
+lection', title=None, description='[Multiplayer Bundle Selection] Confirm the currently previewed bundle.', inputSchema={'properties': {}, 'title': 'mp_bundle_co
+nfirm_selectionArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp
+_bundle_confirm_selectionOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_bundle_cancel_selection', title=None
+, description='[Multiplayer Bundle Selection] Cancel the current bundle preview.', inputSchema={'properties': {}, 'title': 'mp_bundle_cancel_selectionArguments',
+ 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_bundle_cancel_selectionOu
+tput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_combat_select_card', title=None, description='[Multiplayer Comb
+at Selection] Select a card from hand during in-combat card selection.\n\nArgs:\n    card_index: 0-based index of the card in the selectable hand cards.\n', inpu
+tSchema={'properties': {'card_index': {'title': 'Card Index', 'type': 'integer'}}, 'required': ['card_index'], 'title': 'mp_combat_select_cardArguments', 'type':
+ 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_combat_select_cardOutput', 'type'
+: 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_combat_confirm_selection', title=None, description='[Multiplayer Combat Sele
+ction] Confirm the in-combat card selection.', inputSchema={'properties': {}, 'title': 'mp_combat_confirm_selectionArguments', 'type': 'object'}, outputSchema={'
+properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_combat_confirm_selectionOutput', 'type': 'object'}, icons=No
+ne, annotations=None, meta=None, execution=None), Tool(name='mp_relic_select', title=None, description='[Multiplayer Relic Selection] Select a relic (boss relic
+rewards).\n\nArgs:\n    relic_index: 0-based index of the relic.\n', inputSchema={'properties': {'relic_index': {'title': 'Relic Index', 'type': 'integer'}}, 're
+quired': ['relic_index'], 'title': 'mp_relic_selectArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}},
+'required': ['result'], 'title': 'mp_relic_selectOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_relic_skip',
+ title=None, description='[Multiplayer Relic Selection] Skip the relic selection.', inputSchema={'properties': {}, 'title': 'mp_relic_skipArguments', 'type': 'ob
+ject'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_relic_skipOutput', 'type': 'object'},
+ icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_treasure_claim_relic', title=None, description='[Multiplayer Treasure] Bid on / claim a
+relic from the treasure chest.\n\nIn multiplayer, this is a bid — if multiple players pick the same relic,\na "relic fight" determines the winner. Others get con
+solation prizes.\n\nArgs:\n    relic_index: 0-based index of the relic.\n', inputSchema={'properties': {'relic_index': {'title': 'Relic Index', 'type': 'integer'
+}}, 'required': ['relic_index'], 'title': 'mp_treasure_claim_relicArguments', 'type': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type
+': 'string'}}, 'required': ['result'], 'title': 'mp_treasure_claim_relicOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Too
+l(name='mp_crystal_sphere_set_tool', title=None, description='[Multiplayer Crystal Sphere] Switch the active divination tool.\n\nArgs:\n    tool: Either "big" or
+ "small".\n', inputSchema={'properties': {'tool': {'title': 'Tool', 'type': 'string'}}, 'required': ['tool'], 'title': 'mp_crystal_sphere_set_toolArguments', 'ty
+pe': 'object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_crystal_sphere_set_toolOutput
+', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_crystal_sphere_click_cell', title=None, description='[Multiplayer C
+rystal Sphere] Click a hidden cell on the Crystal Sphere grid.\n\nArgs:\n    x: Cell x-coordinate.\n    y: Cell y-coordinate.\n', inputSchema={'properties': {'x'
+: {'title': 'X', 'type': 'integer'}, 'y': {'title': 'Y', 'type': 'integer'}}, 'required': ['x', 'y'], 'title': 'mp_crystal_sphere_click_cellArguments', 'type': '
+object'}, outputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_crystal_sphere_click_cellOutput', '
+type': 'object'}, icons=None, annotations=None, meta=None, execution=None), Tool(name='mp_crystal_sphere_proceed', title=None, description='[Multiplayer Crystal
+Sphere] Continue after the Crystal Sphere minigame finishes.', inputSchema={'properties': {}, 'title': 'mp_crystal_sphere_proceedArguments', 'type': 'object'}, o
+utputSchema={'properties': {'result': {'title': 'Result', 'type': 'string'}}, 'required': ['result'], 'title': 'mp_crystal_sphere_proceedOutput', 'type': 'object'}, icons=None, annotations=None, meta=None, execution=None)]
+
+=== 获取游戏状态 ===
+# Game State: map
+
+**Act 1** | Floor 5 | Ascension 0
+
+## Player (You)
+**铁甲战士** - HP: 46/80 | Gold: 86
+
+### Relics
+- **燃烧之血**: 在战斗结束时，回复6点生命。
+- **精准剪刀**: 拾起时，从你的牌组中移除1张牌。
+
+### Potions
+- [0] **明耀酊剂**: 获得[ironclad_energy_icon.png]。在你的下3个回合开始时，额外获得[ironclad_energy_icon.png]。
+
+## Path Taken
+1. Ancient (3,0) → 2. Monster (1,1) → 3. Shop (0,2) → 4. Unknown (1,3) → 5. Monster (0,4) ← current
+
+## Choose Next Node
+- [0] **Monster** (0,5)
+  Future paths: -> Elite (0,6) -> RestSite (0,7) -> Monster (0,8) -> Treasure (0,9) -> RestSite (1,10) -> Monster (1,11) -> Unknown (1,12) or Monster (2,12) -> Unknown (2,13) -> Elite (1,14) or Monster (2,14) -> RestSite (1,15) or RestSite (2,15) -> Boss (3,16)
+- [1] **Monster** (1,5)
+  Future paths: -> RestSite (2,6) -> Unknown (2,7) -> Monster (2,8) -> Treasure (2,9) -> RestSite (1,10) -> Monster (1,11) -> Unknown (1,12) or Monster (2,12) -> Unknown (2,13) -> Elite (1,14) or Monster (2,14) -> RestSite (1,15) or RestSite (2,15) -> Boss (3,16)
+
+## Keyword Glossary
+- **能量**: 能量用于打出你手牌中的卡牌。
